@@ -18,7 +18,7 @@ public static class ExpressionEvaluator
                 if (item == ')')
                 {
                     var ope = stack.Pop();
-                    while(ope != '(')
+                    while (ope != '(')
                     {
                         posfix += ope;
                         ope = stack.Pop();
@@ -80,13 +80,25 @@ public static class ExpressionEvaluator
 
     private static bool IsOperator(char item) => item == '^' || item == '*' || item == '/' || item == '+' || item == '-' || item == '(' || item == ')';
 
+
+
     private static double EvalutePostfix(string postfix)
     {
         var stack = new Stack<double>();
         foreach (var item in postfix)
         {
+
+
             if (IsOperator(item))
             {
+                if (!IsOperator(item))
+                {
+                   
+                }
+                while (!IsOperator(item))
+                {
+                   
+                }
                 var ope2 = stack.Pop();
                 var ope1 = stack.Pop();
                 stack.Push(Calculate(ope1, ope2, item));
@@ -96,11 +108,13 @@ public static class ExpressionEvaluator
                 stack.Push(char.GetNumericValue(item));
             }
         }
+
         return stack.Pop();
     }
 
     private static double Calculate(double ope1, double ope2, char item) => item switch
     {
+
         '*' => ope1 * ope2,
         '/' => ope1 / ope2,
         '+' => ope1 + ope2,
@@ -108,4 +122,8 @@ public static class ExpressionEvaluator
         '^' => Math.Pow(ope1, ope2),
         _ => throw new Exception("Invalid expression."),
     };
+
+
+   
 }
+
