@@ -7,20 +7,24 @@ public static class ExpressionEvaluator
 {
     public static double Evalute(string infix) => EvalutePostfix(ToPostfix(infix));
 
-    private static string ToPostfix(string infix)
+    private static List<string> ToPostfix(string infix)
     {
-        var posfix = string.Empty;
+        var posfix = new List<string>();
         var stack = new Stack<char>();
-        foreach (var item in infix)
+
+        for (int i = 0; i < infix.Length; i++)
         {
+            var item = infix[i];
+
             if (IsOperator(item))
             {
                 if (item == ')')
                 {
                     var ope = stack.Pop();
+
                     while (ope != '(')
                     {
-                        posfix += ope;
+                        posfix.Add(ope.ToString());
                         ope = stack.Pop();
                     }
                 }
@@ -38,7 +42,7 @@ public static class ExpressionEvaluator
                         }
                         else
                         {
-                            posfix += stack.Pop();
+                            posfix.Add(stack.Pop().ToString());
                             stack.Push(item);
                         }
                     }
@@ -46,15 +50,29 @@ public static class ExpressionEvaluator
             }
             else
             {
-                posfix += item;
+                var digits = string.Empty;
+
+                while (i < infix.Length && !IsOperator(infix[i]))
+                {
+                    digits += infix[i];
+                    i++;
+                }
+
+                i--;
+
+                var number = Group(digits);
+
+                posfix.Add(number.ToString());
             }
         }
-        do
+        while (stack.Count != 0)
         {
-            posfix += stack.Pop();
-        } while (stack.Count != 0);
+            posfix.Add(stack.Pop().ToString());
+        }
+
         return posfix;
     }
+    
 
     private static int PriorityStack(char op) => op switch
     {
@@ -80,32 +98,22 @@ public static class ExpressionEvaluator
 
     private static bool IsOperator(char item) => item == '^' || item == '*' || item == '/' || item == '+' || item == '-' || item == '(' || item == ')';
 
-
-
-    private static double EvalutePostfix(string postfix)
+    private static double EvalutePostfix(List<string> postfix)
     {
         var stack = new Stack<double>();
+
         foreach (var item in postfix)
         {
-
-
-            if (IsOperator(item))
+            if (IsOperator(item[0]))
             {
-                if (!IsOperator(item))
-                {
-                   
-                }
-                while (!IsOperator(item))
-                {
-                   
-                }
                 var ope2 = stack.Pop();
                 var ope1 = stack.Pop();
-                stack.Push(Calculate(ope1, ope2, item));
+
+                stack.Push(Calculate(ope1, ope2, item[0]));
             }
             else
             {
-                stack.Push(char.GetNumericValue(item));
+                stack.Push(Group(item));
             }
         }
 
@@ -114,7 +122,6 @@ public static class ExpressionEvaluator
 
     private static double Calculate(double ope1, double ope2, char item) => item switch
     {
-
         '*' => ope1 * ope2,
         '/' => ope1 / ope2,
         '+' => ope1 + ope2,
@@ -123,7 +130,32 @@ public static class ExpressionEvaluator
         _ => throw new Exception("Invalid expression."),
     };
 
+    private static int IsNumber(char oper) => oper switch
+    {
+        '1' => 1,
+        '2' => 2,
+        '3' => 3,
+        '4' => 4,
+        '5' => 5,
+        '6' => 6,
+        '7' => 7,
+        '8' => 8,
+        '9' => 9,
+        '0' => 0,
+        _ => throw new Exception("Invalid expression.")
+    };
 
-   
+    private static int Group(string digits)
+    {
+        int number = 0;
+
+        foreach (var ch in digits)
+        {
+            number = number * 10 + IsNumber(ch);
+        }
+
+        return number;
+    }
 }
+
 
